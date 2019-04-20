@@ -46,7 +46,7 @@ public class Pipeline {
         int rsrc1, rsrc2, rfunct, rdes;
         int address= 0x9A040;
 
-        for (int i=0; i<9; i++) {
+        for (int i=0; i<12; i++) {
             hexnum= arr[i];
             int opcode =  (hexnum >>>26);
             if (opcode == 0) {
@@ -70,31 +70,19 @@ public class Pipeline {
                 isrc1 =  (hexnum & 0x3e00000) >>> 21;
                 isrc2 =  (hexnum & 0x1f0000)>>>16;
                 ioffset = (byte) (hexnum & 0xffff);
-                //int branch =((ioffset<<2)+address+0x04);
 
                 if (opcode == 0x23) {
-                    sign ="LW";}
+                    sign ="LW";
+                    System.out.printf("0x%02X", address);
+                    System.out.println(": "+sign+ " $"+ isrc2  +", " + ioffset + "(" +"$"+ isrc1 +")");
+                    address=address+0x04;}
 
                 if (opcode == 0x2b) {
-                    sign ="SW";}
+                    sign ="SW";
+                    System.out.printf("0x%02X", address);
+                    System.out.println(": " + sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")");
+                    address = address + 0x04;}
 
-                switch(sign) {
-
-
-                    case "LW":
-                        System.out.printf("0x%02X", address);
-                        System.out.println(": "+sign+ " $"+ isrc2  +", " + ioffset + "(" +"$"+ isrc1 +")");
-                        address=address+0x04;
-                        break;
-
-                    case "SW":
-                        System.out.printf("0x%02X", address);
-                        System.out.println(": "+sign+ " $"+ isrc2  +", " + ioffset + "(" +"$"+ isrc1 +")");
-                        address=address+0x04;
-                        break;
-
-
-                }
 
             }
 
