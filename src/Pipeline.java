@@ -5,20 +5,27 @@ public class Pipeline {
 
     static int[] Main_Mem = new int[0x400];
     static int[] Regs = new int[32];
-    static int hexnum;
+
     static String sign = null;
     static int isrc1, isrc2, ifunct, ioffset;
     static int rsrc1, rsrc2, rfunct, rdes;
-    static int inst, decodedInst;
+    static int  decodedInst;
     static int branch;
     static int address = 0x9A040;
     static int i;
+    static int hexnum=arr[i];
+    static int inst = hexnum;
+    static int cycleNumber;
 
 
     public static void main(String[] args) {
         fillMain_Mem();
         fillRegs();
-        disassembler();
+        for (int i = 0; i < arr.length; i++) {
+            hexnum = arr[i];
+            //disassembler();
+            IF_stage();
+        Print_out_everything();}
     }
 
     private static void fillMain_Mem() {
@@ -45,8 +52,7 @@ public class Pipeline {
     }
 
     public static void disassembler() {
-        for (int i = 0; i < arr.length; i++) {
-            hexnum = arr[i];
+
 
             int opcode = (hexnum >>> 26);
             if (opcode == 0) {
@@ -62,11 +68,11 @@ public class Pipeline {
                     lwSw();
                 }
             }
-        }
+
 public static void IF_stage(){
-        disassembler();
-        inst = arr[i];
-        address=address+4;
+        //disassembler();
+        inst = hexnum;
+        //address=address+4;
 
 
 
@@ -89,9 +95,11 @@ public static void IF_stage(){
     }
 
     public static void opcodeZero() {
-        System.out.printf("0x%02X", address);
-        System.out.println(": " + sign + " $" + rdes + ", " + "$" + rsrc1 + ", " + "$" + rsrc2);
+      // System.out.printf("0x%02X", address);
+       // System.out.printf("0x%02X",hexnum);
+        System.out.print(sign + " $" + rdes + ", " + "$" + rsrc1 + ", " + "$" + rsrc2);
         address = address + 0x04;
+
     }
 
 
@@ -99,9 +107,28 @@ public static void IF_stage(){
         isrc1 = (hexnum & 0x3e00000) >>> 21;
         isrc2 = (hexnum & 0x1f0000) >>> 16;
         ioffset = (byte) (hexnum & 0xffff);
-        System.out.printf("0x%02X", address);
-        System.out.println(": " + sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")");
+        //System.out.printf("0x%02X", address);
+       System.out.print(sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")");
         address = address + 0x04;
+
     }
 
+
+    public static void Print_out_everything(){
+        //inst =hexnum;
+        System.out.println();
+        System.out.println("Clock Cycle" + cycleNumber+ "("+"Before we copy the write side of the pipeline registers to the read side"+")");
+        System.out.print("Inst= ");
+        System.out.printf("0x%02X", inst);
+        System.out.print("        [");
+        disassembler();
+        System.out.print("]");
+        System.out.print("       IncrPC= ");
+        System.out.printf("0x%02X", address);
+        System.out.println();
+        System.out.println();
+        cycleNumber++;
+
+
+    }
 }
