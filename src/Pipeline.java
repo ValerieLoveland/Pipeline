@@ -7,22 +7,22 @@ public class Pipeline {
     static int[] Regs = new int[32];
 
     static String sign = null;
-    static int isrc1, isrc2, ifunct, ioffset ;
+    static int isrc1, isrc2, ifunct, ioffset;
     static int opcode;
     static int rsrc1, rsrc2, rfunct, rdes;
-    static String Zero= "F";
+    static String Zero = "F";
     static String calcBTA = "X";
-    static String RegDst, Function, RegWrite,LWDataValue, SEOffset, WriteRegNumber, MemToReg;
+    static String RegDst, Function, RegWrite, LWDataValue, SEOffset, WriteRegNumber, MemToReg;
     static String equation;
-    static int  decodedInst;
-    static int branch =0;
+    static int decodedInst;
+    static int branch = 0;
     static int address = 0x9A040;
-    static int i=0;
+    static int i = 0;
     static int hexnum;
     static int inst = hexnum;
     static int cycleNumber;
-    static int SWDataValue,ALUResult,  ALUSrc, ALUOp, MemRead, MemWrite;
-    static int  ReadReg1Value, ReadReg2Value,writeReg_20_16, writeReg_15_11;
+    static int SWDataValue, ALUResult, ALUSrc, ALUOp, MemRead, MemWrite;
+    static int ReadReg1Value, ReadReg2Value, writeReg_20_16, writeReg_15_11;
 
     public static void main(String[] args) {
         fillMain_Mem();
@@ -30,14 +30,15 @@ public class Pipeline {
         for (i = 0; i < arr.length; i++) {
             hexnum = arr[i];
 
-           // System.out.println("i= " +i);
+            // System.out.println("i= " +i);
             disassembler();
             //System.out.println("hexnum in main="+hexnum);
             //System.out.println("arri in main =" + arr[i]);
             IF_stage();
             ID_stage();
 
-        Print_out_everything();}
+            Print_out_everything();
+        }
     }
 
     private static void fillMain_Mem() {
@@ -66,49 +67,62 @@ public class Pipeline {
     public static void disassembler() {
 
 
-            int opcode = (hexnum >>> 26);
-            if (opcode == 0) {
-                opcodeZeroAssingingSigns();
-                opcodeZero();
-            } if (opcode == 0x20) {
-                    sign = "lw";
-                    lwSw();
-                }
+        opcode = (hexnum >>> 26);
+        if (opcode == 0) {
+            opcodeZeroAssingingSigns();
+            opcodeZero();
+        }
+        if (opcode == 0x20) {
+            sign = "lw";
+            lwSw();
+        }
 
-                 if (opcode == 0x28) {
-                    sign = "sw";
-                    lwSw();
-                }
-            }
+        if (opcode == 0x28) {
+            sign = "sw";
+            lwSw();
+        }
+    }
 
-public static void IF_stage(){
-    disassembler();
-    inst=arr[i];
+    public static void IF_stage() {
+        disassembler();
+        inst = arr[i];
         //hexnum =arr[i];
-    //System.out.println("i= " +i);
+        //System.out.println("i= " +i);
 
         //inst = arr[i];
-    //System.out.println("inst =" + inst);
+        //System.out.println("inst =" + inst);
 
-   // i++;
+        // i++;
 //address=address+4;
 
-}
+    }
 
-public static void ID_stage(){
-    hexnum = arr[i];
-       disassembler();
+    public static void ID_stage() {
+        hexnum = arr[i];
+        disassembler();
         RegDst();
         ALUSrc();
         ALUOp();
         MemRead();
         MemWrite();
-        branch=0;
+        branch = 0;
         MemToReg();
         RegWrite();
+        Function();
+        SEOffset();
+        writeReg_20_16();
+        ReadReg1Value();
+        ReadReg2Value();
+        //writeReg_15_11();
+//        System.out.println("THIS IS INSIDE THE ID STAGE");
+//        System.out.print("Control: RegDst = " + RegDst + " ALUSrc= " + ALUSrc + " ALUOp= " + ALUOp + " MemRead= " + MemRead + " MemWrite= " + MemWrite);
+//        System.out.print("Branch = " + branch + " MemToReg =" + MemToReg + " RegWrite = " + RegWrite + " [ " + MemRead + " ]");
+//        System.out.println();
+//        System.out.print("IncrPC = " + RegDst + " ReadReg1Value= " + ReadReg1Value + "ReadReg2Value=" + ReadReg2Value);
+//        System.out.print(" SEOffset = " + RegDst + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
 
 
-}
+    }
 
     public static void opcodeZeroAssingingSigns() {
         rsrc1 = (hexnum & 0x03e00000) >> 21;
@@ -126,10 +140,10 @@ public static void ID_stage(){
     }
 
     public static void opcodeZero() {
-      // System.out.printf("0x%02X", address);
-       // System.out.printf("0x%02X",hexnum);
+        // System.out.printf("0x%02X", address);
+        // System.out.printf("0x%02X",hexnum);
         //System.out.print(sign + " $" + rdes + ", " + "$" + rsrc1 + ", " + "$" + rsrc2);
-        equation=(sign + " $" + rdes + ", " + "$" + rsrc1 + ", " + "$" + rsrc2).toString();
+        equation = (sign + " $" + rdes + ", " + "$" + rsrc1 + ", " + "$" + rsrc2).toString();
         address = address + 0x04;
 
     }
@@ -140,18 +154,18 @@ public static void ID_stage(){
         isrc2 = (hexnum & 0x1f0000) >>> 16;
         ioffset = (byte) (hexnum & 0xffff);
         //System.out.printf("0x%02X", address);
-       //System.out.print(sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")");
-        equation= sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")".toString();
+        //System.out.print(sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")");
+        equation = sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")".toString();
         address = address + 0x04;
 
     }
 
 
-    public static void Print_out_everything(){
+    public static void Print_out_everything() {
         disassembler();
-        inst =hexnum;
+        inst = hexnum;
         System.out.println();
-        System.out.println("Clock Cycle" + cycleNumber+ "("+"Before we copy the write side of the pipeline registers to the read side"+")");
+        System.out.println("Clock Cycle" + cycleNumber + "(" + "Before we copy the write side of the pipeline registers to the read side" + ")");
 
 //        System.out.println();
 //        System.out.println("IF/ID Write (Written to by the IF stage)");
@@ -168,7 +182,7 @@ public static void ID_stage(){
 
         System.out.println();
         System.out.println("IF/ID Write (Written to by the IF stage)");
-        System.out.println("This is the IF version");
+        // System.out.println("This is the IF version");
         System.out.print("Inst= ");
         System.out.printf("0x%02X", arr[i]);
         System.out.print("        [");
@@ -181,11 +195,13 @@ public static void ID_stage(){
         System.out.println();
 
         System.out.println("ID/EX Write (Written to by the ID stage)");
-        System.out.print("Control: RegDst = "+ RegDst+ " ALUSrc= "+ALUSrc+" ALUOp= "+ALUOp+" MemRead= "+MemRead+" MemWrite= "+MemWrite);
-        System.out.print("Branch = "+ branch+ " MemToReg ="+MemToReg+" RegWrite = "+RegWrite+" [ "+MemRead+" ]");
+        System.out.print("Control: RegDst = " + RegDst + " ALUSrc= " + ALUSrc + " ALUOp= " + ALUOp + " MemRead= " + MemRead + " MemWrite= " + MemWrite);
+        System.out.print("Branch = " + branch + " MemToReg = " + MemToReg + " RegWrite = " + RegWrite + " [ " + sign + " ]");
         System.out.println();
-        System.out.print("IncrPC = "+ RegDst+ " ReadReg1Value= "+ReadReg1Value+"ReadReg2Value="+ReadReg2Value);
-        System.out.print(" SEOffset = "+ RegDst+ " WriteReg_20_16= "+writeReg_20_16+" WriteReg_15_11= "+writeReg_15_11+" Function= "+ Function);
+        System.out.print("IncrPC = ");
+        System.out.printf("0x%02X", address);
+        System.out.println(" ReadReg1Value= " + ReadReg1Value + " ReadReg2Value= " + ReadReg2Value);
+        System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
 
 //        System.out.println();
 //        System.out.println();
@@ -217,24 +233,34 @@ public static void ID_stage(){
     }
 
 
-    public static String RegDst(){
-        if (opcode == 0x28){
-            RegDst = "x";
-        }else if(opcode==0x20){
-        RegDst = "0";
-        }else{
+    public static String RegDst() {
+        disassembler();
+        System.out.print("opcode is ");
+        System.out.printf("0x%02X", opcode);
+        System.out.println();
+        if (opcode == 0x28) {
+            RegDst = "X";
+        } else if (opcode == 0x20) {
+            RegDst = "0";
+        } else {
             RegDst = "1";
-        }return RegDst;
+        }
+        return RegDst;
     }
-    public static int ALUSrc(){
-        if (opcode == 0x0){
-            ALUSrc=0;}
-        else{
-            ALUSrc=1;
 
-        } return ALUSrc;
-}
+    public static int ALUSrc() {
+        disassembler();
+        if (opcode == 0x0) {
+            ALUSrc = 0;
+        } else {
+            ALUSrc = 1;
+
+        }
+        return ALUSrc;
+    }
+
     public static int ALUOp() {
+        disassembler();
         if (opcode == 0x0) {
             ALUOp = 10;
         } else {
@@ -247,6 +273,7 @@ public static void ID_stage(){
     }
 
     public static int MemRead() {
+        disassembler();
         if (opcode == 0x20) {
             MemRead = 1;
         } else {
@@ -267,13 +294,14 @@ public static void ID_stage(){
     }
 
     public static String MemToReg() {
+        disassembler();
         if (opcode == 0x20) {
             MemToReg = "1";
-        } else if(opcode==0x28){
+        } else if (opcode == 0x28) {
             MemToReg = "X";
 
-        }else{
-            MemToReg= "0";
+        } else {
+            MemToReg = "0";
         }
         return MemToReg;
     }
@@ -281,13 +309,15 @@ public static void ID_stage(){
     public static String RegWrite() {
         if (opcode == 0x28) {
             RegWrite = "0";
-        }else{
-            RegWrite= "1";
+        } else {
+            RegWrite = "1";
         }
         return RegWrite;
     }
 
     public static int ReadReg1Value() {
+
+        disassembler();
         if (opcode == 0x0) {
             ReadReg1Value = 100 + rsrc1;
 
@@ -296,7 +326,9 @@ public static void ID_stage(){
         }
         return ReadReg2Value;
     }
+
     public static int ReadReg2Value() {
+        disassembler();
         if (opcode == 0x0) {
             ReadReg2Value = 100 + rsrc2;
 
@@ -306,21 +338,22 @@ public static void ID_stage(){
         return ReadReg2Value;
     }
 
-public static String SEOffset(){
-        if (opcode !=0 && ioffset>0){
-          SEOffset = "0000000"+ Integer.toString(ioffset);
+    public static String SEOffset() {
+        disassembler();
+        if ((opcode == 0x20||opcode==0x28) && ioffset >= 0) {
+            SEOffset = "0000000" + Integer.toString(ioffset);
+        } else if ((opcode == 0x20||opcode==0x28) && ioffset < 0) {
+            SEOffset = "fffffff" + Integer.toString(ioffset);
+        } else {
+            SEOffset = "x";
         }
-
-            else if (opcode !=0 && ioffset<0){
-                SEOffset = "fffffff"+ Integer.toString(ioffset);
-            }else{
-                SEOffset = "x";
-        }return SEOffset;
+        return SEOffset;
 
 
     }
 
     public static int writeReg_20_16() {
+        disassembler();
         if (opcode == 0x0) {
             writeReg_20_16 = rsrc2;
         } else {
@@ -329,12 +362,15 @@ public static String SEOffset(){
         }
         return writeReg_20_16;
     }
+
     public static String Function() {
+        disassembler();
+        System.out.println("function is "+Function);
         if (rfunct == 0x20) {
             Function = "20";
         }
 
-        if (rfunct == 0x22) {
+        else if (rfunct == 0x22) {
             Function = "22";
 
         } else {
@@ -343,29 +379,31 @@ public static String SEOffset(){
         return Function;
     }
 
-    public static int ALUResult(){
+    public static int ALUResult() {
+        disassembler();
         if (rfunct == 0x20) {
             ALUResult = ReadReg1Value + ReadReg2Value;
+        } else if (rfunct == 0x22) {
+            ALUResult = ReadReg1Value - ReadReg2Value;
+        } else {
+            if (ioffset > 0) {
+                ALUResult = ReadReg1Value + ioffset;
+            } else {
+                ALUResult = ReadReg1Value - ioffset;
+            }
         }
-            else if (rfunct == 0x22){
-                ALUResult = ReadReg1Value - ReadReg2Value;
-    }else{
-                if (ioffset > 0){
-                    ALUResult = ReadReg1Value+ioffset;
-                }else{
-                    ALUResult = ReadReg1Value-ioffset;
-                }} return ALUResult;
-        }
+        return ALUResult;
+    }
 
 
-
-    public static String WriteRegNumber(){
+    public static String WriteRegNumber() {
+        disassembler();
         if (opcode == 0x20) {
             WriteRegNumber = Integer.toString(isrc2);
-        }  else if (opcode == 0x28){
+        } else if (opcode == 0x28) {
             WriteRegNumber = "X";
 
-        }else {
+        } else {
             WriteRegNumber = Integer.toString(rdes);
 
         }
@@ -373,25 +411,22 @@ public static String SEOffset(){
     }
 
 
-
-
-
-public static String LWDataValue(){
+    public static String LWDataValue() {
+        disassembler();
         if (opcode == 0x20) {
             LWDataValue = Integer.toString(ALUResult);
-        }
-        else{
+        } else {
             LWDataValue = "X";
         }
         return LWDataValue;
     }
 
-    public static int SWDataValue(){
+    public static int SWDataValue() {
+        disassembler();
         if (opcode == 0x0) {
             SWDataValue = ReadReg2Value;
-        }
-        else{
-            SWDataValue = isrc2 ;
+        } else {
+            SWDataValue = isrc2;
         }
         return SWDataValue;
     }
