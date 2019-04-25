@@ -36,6 +36,7 @@ public class Pipeline {
             //System.out.println("arri in main =" + arr[i]);
             IF_stage();
             ID_stage();
+            EX_stage();
 
             Print_out_everything();
         }
@@ -124,6 +125,23 @@ public class Pipeline {
 
     }
 
+   public static void EX_stage(){
+        disassembler();
+        MemRead();
+        MemWrite();
+        branch=0;
+        MemToReg();
+        ReadReg1Value();
+        ReadReg2Value();
+        RegWrite();
+        calcBTA="X";
+        Zero="F";
+        ALUResult();
+        WriteRegNumber();
+        SWDataValue();
+
+    }
+
     public static void opcodeZeroAssingingSigns() {
         rsrc1 = (hexnum & 0x03e00000) >> 21;
         rsrc2 = (hexnum & 0x1f0000) >> 16;
@@ -165,7 +183,7 @@ public class Pipeline {
         disassembler();
         inst = hexnum;
         System.out.println();
-        System.out.println("Clock Cycle" + cycleNumber + "(" + "Before we copy the write side of the pipeline registers to the read side" + ")");
+        System.out.println("Clock Cycle " + cycleNumber + " (" + "Before we copy the write side of the pipeline registers to the read side" + ")");
 
 //        System.out.println();
 //        System.out.println("IF/ID Write (Written to by the IF stage)");
@@ -203,17 +221,17 @@ public class Pipeline {
         System.out.println(" ReadReg1Value= " + ReadReg1Value + " ReadReg2Value= " + ReadReg2Value);
         System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
 
-//        System.out.println();
-//        System.out.println();
-//
-//        System.out.println("EX/MEM Write (Written to by the EX stage)");
-//        System.out.print("Control: MemRead = "+ MemRead+ " MemWrite= "+MemWrite+" Branch= "+branch+" MemToReg= "+MemToReg+" RegWrite= "+RegWrite+ " [ "+sign+" ] ");
-//        System.out.print("CalcBTA = "+ calcBTA + " Zero= "+Zero+" ALUResult = "+ALUResult);
-//        System.out.println();
-//        System.out.print("SWValue = "+ SWDataValue + " WriteRegNum= "+WriteRegNumber);
-//
-//        System.out.println();
-//        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        System.out.println("EX/MEM Write (Written to by the EX stage)");
+        System.out.print("Control: MemRead = "+ MemRead+ " MemWrite= "+MemWrite+" Branch= "+branch+" MemToReg= "+MemToReg+" RegWrite= "+RegWrite+ " [ "+sign+" ] ");
+        System.out.print("CalcBTA = "+ calcBTA + " Zero= "+Zero+" ALUResult = "+ALUResult);
+        System.out.println();
+        System.out.print("SWValue = "+ SWDataValue + " WriteRegNum= "+WriteRegNumber);
+
+        System.out.println();
+        System.out.println();
 //
 //        System.out.println("MEM/WB Write (Written to by the MEM stage)");
 //        System.out.print("Control: MemtoReg = "+ MemToReg+ " RegWrite= "+RegWrite+" [ "+sign+" ] ");
@@ -235,8 +253,8 @@ public class Pipeline {
 
     public static String RegDst() {
         disassembler();
-        System.out.print("opcode is ");
-        System.out.printf("0x%02X", opcode);
+       // System.out.print("opcode is ");
+       // System.out.printf("0x%02X", opcode);
         System.out.println();
         if (opcode == 0x28) {
             RegDst = "X";
@@ -365,7 +383,7 @@ public class Pipeline {
 
     public static String Function() {
         disassembler();
-        System.out.println("function is "+Function);
+       // System.out.println("function is "+Function);
         if (rfunct == 0x20) {
             Function = "20";
         }
@@ -381,12 +399,13 @@ public class Pipeline {
 
     public static int ALUResult() {
         disassembler();
+       // System.out.println("readreg1val= "+ ReadReg1Value+" ioffset= "+ ioffset);
         if (rfunct == 0x20) {
             ALUResult = ReadReg1Value + ReadReg2Value;
         } else if (rfunct == 0x22) {
             ALUResult = ReadReg1Value - ReadReg2Value;
         } else {
-            if (ioffset > 0) {
+            if (ioffset >= 0) {
                 ALUResult = ReadReg1Value + ioffset;
             } else {
                 ALUResult = ReadReg1Value - ioffset;
@@ -424,9 +443,9 @@ public class Pipeline {
     public static int SWDataValue() {
         disassembler();
         if (opcode == 0x0) {
-            SWDataValue = ReadReg2Value;
+            SWDataValue = 100+ ReadReg2Value;
         } else {
-            SWDataValue = isrc2;
+            SWDataValue = 100+ isrc2;
         }
         return SWDataValue;
     }
