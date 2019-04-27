@@ -31,12 +31,12 @@ public class Pipeline {
             hexnum = arr[i];
 
             // System.out.println("i= " +i);
-            disassembler();
-            //System.out.println("hexnum in main="+hexnum);
-            //System.out.println("arri in main =" + arr[i]);
-            IF_stage();
-            ID_stage();
-            EX_stage();
+//            disassembler();
+//            //System.out.println("hexnum in main="+hexnum);
+//            //System.out.println("arri in main =" + arr[i]);
+//            IF_stage();
+//            ID_stage();
+//            EX_stage();
 
             Print_out_everything();
         }
@@ -99,8 +99,11 @@ public class Pipeline {
     }
 
     public static void ID_stage() {
-        hexnum = arr[i];
-        disassembler();
+        hexnum = arr[i+1];
+
+
+        IF_stage();
+
         RegDst();
         ALUSrc();
         ALUOp();
@@ -180,6 +183,8 @@ public class Pipeline {
 
 
     public static void Print_out_everything() {
+        hexnum=arr[i];
+
         disassembler();
         inst = hexnum;
         System.out.println();
@@ -197,9 +202,31 @@ public class Pipeline {
 //        System.out.printf("0x%02X", address);
 //        System.out.println();
 //        System.out.println();
+        System.out.println();
+       // System.out.println("IF/ID Read (Read by the ID stage)");
+        disassembler();
+        inst = hexnum;
+        System.out.println();
 
         System.out.println();
+        ID_stage();
         System.out.println("IF/ID Write (Written to by the IF stage)");
+        // System.out.println("This is the IF version");
+        System.out.print("Inst= ");
+        System.out.printf("0x%02X", arr[i]);
+        System.out.print("        [");
+        //disassembler();
+        System.out.print(equation);
+        System.out.print("]");
+        System.out.print("       IncrPC= ");
+        System.out.printf("0x%02X", address);
+        System.out.println();
+        System.out.println();
+
+
+
+        IF_stage();
+        System.out.println("IF/ID Read (Read by the ID stage)");
         // System.out.println("This is the IF version");
         System.out.print("Inst= ");
         System.out.printf("0x%02X", arr[i]);
