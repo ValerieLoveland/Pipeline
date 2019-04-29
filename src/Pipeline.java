@@ -1,6 +1,6 @@
 public class Pipeline {
 
-    static int[] arr = new int[]{0x99999999, 0x99999999, 0x99999999, 0x99999999, 0x99999999, 0x99999999, 0x99999999,
+    static int[] arr = new int[]{0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
             0xa1020000, 0x810AFFFC, 0x00831820, 0x01263820, 0x01224820, 0x81180000,
             0x81510010, 0x00624022, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
 
@@ -17,7 +17,6 @@ public class Pipeline {
     static String equation;
     static int decodedInst;
     static int branch = 0;
-    static int address = 0x9A040;
     static int i = 0;
     static int hexnum;
     static int inst = hexnum;
@@ -29,7 +28,7 @@ public class Pipeline {
         fillMain_Mem();
         fillRegs();
         ClockCycleZero();
-        for (i = 0; i <= arr.length; i++) {
+        for (i = 0; i < 10; i++) {
             hexnum = arr[i];
             Print_out_everything();
         }
@@ -196,7 +195,7 @@ public class Pipeline {
     public static void opcodeZero() {
 
         equation = (sign + " $" + rdes + ", " + "$" + rsrc1 + ", " + "$" + rsrc2).toString();
-        address = address + 0x04;
+        // address = address + 0x04;
 
     }
 
@@ -208,7 +207,7 @@ public class Pipeline {
         //System.out.printf("0x%02X", address);
         //System.out.print(sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")");
         equation = sign + " $" + isrc2 + ", " + ioffset + "(" + "$" + isrc1 + ")".toString();
-        address = address + 0x04;
+        //  address = address + 0x04;
 
     }
 
@@ -234,16 +233,18 @@ public class Pipeline {
         System.out.println("IF/ID Write (Written to by the IF stage)");
         // System.out.println("This is the IF version");
         System.out.print("Inst= ");
-        if (arr[cycleNumber + 6] == 0x99999999) {
+        if (arr[cycleNumber + 6] == 0x00000000) {
             System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 6] == 0x00000000){
+//            NOPIFIDWritePrint();
         } else {
             System.out.printf("0x%02X", arr[cycleNumber + 6]);
             System.out.print("        [");
             //disassembler();
             System.out.print(equation);
             System.out.print("]");
-            System.out.print("       IncrPC= ");
-            System.out.printf("0x%02X", address);
+//            System.out.print("       IncrPC= ");
+//            System.out.printf("0x%02X", address);
         }
         System.out.println();
         System.out.println();
@@ -254,9 +255,11 @@ public class Pipeline {
         // System.out.println("This is the IF version");
         hexnum = arr[cycleNumber + 5];
         System.out.print("Inst= ");
-        if (arr[cycleNumber + 5] == 0x99999999) {
+        if (arr[cycleNumber + 5] == 0x00000000) {
             System.out.println("0x00000000");
-        } else {
+//        } else if (arr[cycleNumber + 5] == 0x00000000){
+//            NOPIFIDReadPrint();
+        }else {
             IFIDReadPrint();
         }
         System.out.println();
@@ -264,8 +267,10 @@ public class Pipeline {
 
         System.out.println("ID/EX Write (Written to by the ID stage)");
         System.out.print("Control = ");
-        if (arr[cycleNumber + 5] == 0x99999999) {
+        if (arr[cycleNumber + 5] == 0x00000000) {
             System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 5] == 0x00000000){
+//            NOPIDEXWritePrint();
         } else {
             IDEXWritePrint();
         }
@@ -275,8 +280,10 @@ public class Pipeline {
         System.out.println("ID/EX Read (Read to by the EX stage)");
         hexnum = arr[cycleNumber + 4];
         System.out.print("Control = ");
-        if (arr[cycleNumber + 4] == 0x99999999) {
+        if (arr[cycleNumber + 4] == 0x00000000) {
             System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 4] == 0x00000000){
+//            NOPIDEXReadPrint();
         } else {
             IDEXReadPrint();
         }
@@ -285,8 +292,10 @@ public class Pipeline {
 
         System.out.println("EX/MEM Write (Written to by the EX stage)");
         System.out.print("Control = ");
-        if (arr[cycleNumber + 4] == 0x99999999) {
+        if (arr[cycleNumber + 4] == 0x00000000) {
             System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 4] == 0x00000000){
+//            NOPEXMEMWritePrint();
         } else {
             EXMEMWritePrint();
         }
@@ -297,8 +306,10 @@ public class Pipeline {
         System.out.println("EX/MEM Read (Read by the MEM stage)");
         hexnum = arr[cycleNumber + 3];
         System.out.print("Control = ");
-        if (arr[cycleNumber + 3] == 0x99999999) {
+        if (arr[cycleNumber + 3] == 0x00000000) {
             System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 3] == 0x00000000){
+//            NOPEXMEMReadPrint();
         } else {
             EXMEMReadPrint();
         }
@@ -307,8 +318,10 @@ public class Pipeline {
 
         System.out.println("MEM/WB Write (Written by the MEM stage)");
         System.out.print("Control = ");
-        if (arr[cycleNumber + 3] == 0x99999999) {
+        if (arr[cycleNumber + 3] == 0x00000000) {
             System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 3] == 0x00000000){
+//            NOPMEMWBWritePrint();
         } else {
             MEMWBWritePrint();
 
@@ -319,7 +332,7 @@ public class Pipeline {
         WB_stage();
         System.out.println("MEM/WB Read (Read by the WB stage)");
         System.out.print("Control = ");
-        if (arr[cycleNumber + 2] == 0x99999999) {
+        if (arr[cycleNumber + 2] == 0x00000000) {
             System.out.println("0x00000000");
         } else {
             MEMWBReadPrint();
@@ -335,116 +348,10 @@ public class Pipeline {
         System.out.println();
 
 
-        System.out.println("Clock Cycle " + cycleNumber + " (" + "After we copy the write side of the pipeline registers to the read side" + ")");
 
-
-        System.out.println();
-
-        hexnum = arr[cycleNumber + 7];
-        disassembler();
-        inst = hexnum;
-        System.out.println();
-
-        System.out.println();
-        IF_stage();
-        System.out.println("IF/ID Write (Written to by the IF stage)");
-        // System.out.println("This is the IF version");
-        System.out.print("Inst= ");
-        if (arr[cycleNumber + 7] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            System.out.printf("0x%02X", arr[cycleNumber + 7]);
-            System.out.print("        [");
-            //disassembler();
-            System.out.print(equation);
-            System.out.print("]");
-            System.out.print("       IncrPC= ");
-            System.out.printf("0x%02X", address);
-        }
-        System.out.println();
-        System.out.println();
-
-
-        //ID_stage();
-        System.out.println("IF/ID Read (Read by the ID stage)");
-        // System.out.println("This is the IF version");
-        System.out.print("Inst= ");
-        if (arr[cycleNumber + 7] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            IFIDReadPrint();
-        }
-        System.out.println();
-        System.out.println();
-        ID_stage();
-        System.out.println("ID/EX Write (Written to by the ID stage)");
-        System.out.print("Control = ");
-        if (arr[cycleNumber + 5] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            IDEXWritePrint();
-        }
-        System.out.println();
-        System.out.println();
-
-        System.out.println("ID/EX Read (Read to by the EX stage)");
-        System.out.print("Control = ");
-        if (arr[cycleNumber + 5] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            IDEXReadPrint();
-        }
-        System.out.println();
-        System.out.println();
-        EX_stage();
-        System.out.println("EX/MEM Write (Written to by the EX stage)");
-        System.out.print("Control = ");
-        if (arr[cycleNumber + 4] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            EXMEMWritePrint();
-        }
-        System.out.println();
-        System.out.println();
-
-
-        System.out.println("EX/MEM Read (Read by the MEM stage)");
-        System.out.print("Control = ");
-        if (arr[cycleNumber + 4] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            EXMEMReadPrint();
-        }
-        System.out.println();
-        System.out.println();
-        MEM_stage();
-        System.out.println("MEM/WB Write (Written by the MEM stage)");
-        System.out.print("Control = ");
-        if (arr[cycleNumber + 3] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            MEMWBWritePrint();
-
-        }
-        System.out.println();
-        System.out.println();
-        System.out.println("MEM/WB Read (Read by the WB stage)");
-        System.out.print("Control = ");
-        if (arr[cycleNumber + 3] == 0x99999999) {
-            System.out.println("0x00000000");
-        } else {
-            MEMWBReadPrint();
-
-        }
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-
-
-        //cycleNumber=cycleNumber+2;
         cycleNumber++;
+
+RegsPrint();
 
     }
 
@@ -646,6 +553,22 @@ public class Pipeline {
         return SWDataValue;
     }
 
+    public static void WBReaddAction() {
+        disassembler();
+        if (opcode == 0x0) {
+            Regs[rdes]=ALUResult;
+            System.out.println("$"+ rdes +"is set to new value of "+ALUResult());
+        } else if(opcode==0x20){
+            Regs[isrc2]=Main_Mem[ALUResult];
+            System.out.println("$"+isrc2+" is set to a new value of "+Main_Mem[ALUResult]);
+        }else{
+            Main_Mem[ALUResult]=SWDataValue;
+            System.out.println("No register is written to since a SW does not write to a register");
+        }
+
+    }
+
+
     public static void ClockCycleZero() {
         System.out.println("Clock Cycle 0 (before we start the specified instructions)");
         System.out.println("IF/ID Write (Written to by the IF stage)");
@@ -681,17 +604,17 @@ public class Pipeline {
         System.out.print("        [");
         //disassembler();
         System.out.print(equation);
-        System.out.print("]");
-        System.out.print("       IncrPC= ");
-        System.out.printf("0x%02X", address);
+//        System.out.print("]");
+//        System.out.print("       IncrPC= ");
+        // System.out.printf("0x%02X", address);
     }
+
+
 
     public static void IDEXWritePrint() {
         System.out.print("RegDst = " + RegDst + " ALUSrc= " + ALUSrc + " ALUOp= " + ALUOp + " MemRead= " + MemRead + " MemWrite= " + MemWrite);
         System.out.print("Branch = " + branch + " MemToReg = " + MemToReg + " RegWrite = " + RegWrite + " [ " + sign + " ]");
         System.out.println();
-        System.out.print("IncrPC = ");
-        System.out.printf("0x%02X", address);
         System.out.println(" ReadReg1Value= " + ReadReg1Value + " ReadReg2Value= " + ReadReg2Value);
         System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
 
@@ -701,8 +624,6 @@ public class Pipeline {
         System.out.print("RegDst = " + RegDst + " ALUSrc= " + ALUSrc + " ALUOp= " + ALUOp + " MemRead= " + MemRead + " MemWrite= " + MemWrite);
         System.out.print("Branch = " + branch + " MemToReg = " + MemToReg + " RegWrite = " + RegWrite + " [ " + sign + " ]");
         System.out.println();
-        System.out.print("IncrPC = ");
-        System.out.printf("0x%02X", address);
         System.out.println(" ReadReg1Value= " + ReadReg1Value + " ReadReg2Value= " + ReadReg2Value);
         System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
 
@@ -734,31 +655,142 @@ public class Pipeline {
         System.out.println();
         System.out.println(" LWDataValue = " + LWDataValue + " ALUResult = " + ALUResult + " WriteRegNum= " + WriteRegNumber);
 
-    }
+
+//WBactionprint();
+        }
+    public static void RegsPrint() {
+        System.out.println("Printing registers:");
+        for (int i = 1; i < 32; i++) {
+            System.out.printf("%x", Regs[i]);
+            System.out.println();
+        }}
+
+
 
     public static void Copy_write_to_read() {
-        System.out.println("IF/ID Write (Written to by the IF stage)");
-        System.out.println("Inst = 0x00000000");
-        System.out.println();
-        System.out.println("IF/ID Read (Read by the ID stage)");
-        System.out.println("Inst = 0x00000000");
-        System.out.println();
-        System.out.println("ID/EX Write (Written to by the ID stage)");
-        System.out.println("Control = 0x00000000");
-        System.out.println();
-        System.out.println("ID/EX Read (Read by  the EX stage)");
-        System.out.println("Control = 0x00000000");
-        System.out.println();
-        System.out.println("EX/MEM Write (Written to by the EX stage)");
-        System.out.println("Control = 0x00000000");
-        System.out.println();
-        System.out.println("EX/MEM Read (Read by  by the MEM stage)");
-        System.out.println("Control = 0x00000000");
-        System.out.println();
-        System.out.println("MEM/WB Write (Written to by the MEM stage)");
-        System.out.println("Control = 0x00000000");
-        System.out.println();
-        System.out.println("MEM/WB Write (Written to by the MEM stage)");
-        System.out.println("Control = 0x00000000");
+//        System.out.println("Clock Cycle " + cycleNumber + " (" + "After we copy the write side of the pipeline registers to the read side" + ")");
+//
+//
+//        System.out.println();
+//
+        hexnum = arr[cycleNumber + 7];
+        disassembler();
+        inst = hexnum;
+        //      System.out.println();
+
+        //       System.out.println();
+        //      IF_stage();
+//        System.out.println("IF/ID Write (Written to by the IF stage)");
+//        // System.out.println("This is the IF version");
+//        System.out.print("Inst= ");
+        //       if (arr[cycleNumber + 7] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 7] == 0x00000000){
+//            NOPIFIDWritePrint();
+//        } else {
+//            System.out.printf("0x%02X", arr[cycleNumber + 7]);
+//            System.out.print("        [");
+//            //disassembler();
+//            System.out.print(equation);
+//            System.out.print("]");
+//            System.out.print("       IncrPC= ");
+//            System.out.printf("0x%02X", address);
+//        }
+//        System.out.println();
+//        System.out.println();
+//
+//
+//        //ID_stage();
+//        System.out.println("IF/ID Read (Read by the ID stage)");
+//        // System.out.println("This is the IF version");
+//        System.out.print("Inst= ");
+//        if (arr[cycleNumber + 7] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 7] == 0x00000000){
+//            NOPIFIDReadPrint();
+//        } else {
+//            IFIDReadPrint();
+//        }
+//        System.out.println();
+//        System.out.println();
+        //       ID_stage();
+//        System.out.println("ID/EX Write (Written to by the ID stage)");
+//        System.out.print("Control = ");
+//        if (arr[cycleNumber + 5] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 5] == 0x00000000){
+//            NOPIDEXWritePrint();
+//        } else {
+//            IDEXWritePrint();
+//        }
+//        System.out.println();
+//        System.out.println();
+//
+//        System.out.println("ID/EX Read (Read to by the EX stage)");
+//        System.out.print("Control = ");
+//        if (arr[cycleNumber + 5] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 5] == 0x00000000){
+//            NOPIDEXReadPrint();
+//        } else {
+//            IDEXReadPrint();
+//        }
+//        System.out.println();
+//        System.out.println();
+//        EX_stage();
+//        System.out.println("EX/MEM Write (Written to by the EX stage)");
+//        System.out.print("Control = ");
+//        if (arr[cycleNumber + 4] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 4] == 0x00000000){
+//            NOPEXMEMWritePrint();
+//        } else {
+//            EXMEMWritePrint();
+//        }
+//        System.out.println();
+//        System.out.println();
+//
+//
+//        System.out.println("EX/MEM Read (Read by the MEM stage)");
+//        System.out.print("Control = ");
+//        if (arr[cycleNumber + 4] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 4] == 0x00000000){
+//            NOPEXMEMReadPrint();
+//        } else {
+//            EXMEMReadPrint();
+//        }
+//        System.out.println();
+//        System.out.println();
+//        MEM_stage();
+//        System.out.println("MEM/WB Write (Written by the MEM stage)");
+//        System.out.print("Control = ");
+//        if (arr[cycleNumber + 3] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 3] == 0x00000000){
+//            NOPMEMWBWritePrint();
+//        } else {
+//            MEMWBWritePrint();
+//
+//        }
+//        System.out.println();
+//        System.out.println();
+//        System.out.println("MEM/WB Read (Read by the WB stage)");
+//        System.out.print("Control = ");
+//        if (arr[cycleNumber + 3] == 0x99999999) {
+//            System.out.println("0x00000000");
+//        } else if (arr[cycleNumber + 3] == 0x00000000){
+//            NOPMEMWBReadPrint();
+//        } else {
+//            MEMWBReadPrint();
+//
+//        }
+//        System.out.println();
+//        System.out.println();
+//        System.out.println();
+//        System.out.println();
+//        System.out.println();
+//
+//
     }
 }
