@@ -1,8 +1,9 @@
 public class Pipeline {
 
-    static int[] arr = new int[]{0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+    static int[] arr = new int[]{0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000,
             0xa1020000, 0x810AFFFC, 0x00831820, 0x01263820, 0x01224820, 0x81180000,
-            0x81510010, 0x00624022, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
+            0x81510010, 0x00624022, 0x00000000, 0x00000000, 0x00000000, 0x00000000 , 0x00000000, 0x00000000};
 
     static int[] Main_Mem = new int[0x400];
     static int[] Regs = new int[32];
@@ -22,13 +23,14 @@ public class Pipeline {
     static int inst = hexnum;
     static int cycleNumber = 1;
     static int SWDataValue, ALUResult, ALUSrc, ALUOp, MemRead, MemWrite;
-    static int ReadReg1Value, ReadReg2Value, writeReg_20_16, writeReg_15_11;
+    static int ReadReg1Value, ReadReg2Value, WriteReg_20_16, WriteReg_15_11;
 
     public static void main(String[] args) {
         fillMain_Mem();
         fillRegs();
         ClockCycleZero();
-        for (i = 0; i < 10; i++) {
+
+        for (i = 0; i < 12; i++) {
             hexnum = arr[i];
             Print_out_everything();
         }
@@ -164,8 +166,9 @@ public class Pipeline {
     }
 
     public static void WB_stage() {
-        hexnum = arr[cycleNumber + 4];
+        hexnum = arr[cycleNumber + 2];
         disassembler();
+        inst = arr[cycleNumber + 4];
         //MEM_stage();
         MemToReg();
         RegWrite();
@@ -324,7 +327,9 @@ public class Pipeline {
 //            NOPMEMWBWritePrint();
         } else {
             MEMWBWritePrint();
-
+                    }
+        if (opcode==0x28){
+            MEMWBWritePrintForSW();
         }
         System.out.println();
         System.out.println();
@@ -336,16 +341,17 @@ public class Pipeline {
             System.out.println("0x00000000");
         } else {
             MEMWBReadPrint();
-
+            //WBReadActionprint();
+            WBReadAction();
         }
         System.out.println();
         System.out.println();
         System.out.println();
-        hexnum = arr[cycleNumber + 6];
+       // hexnum = arr[cycleNumber + 6];
 
-        disassembler();
-        inst = arr[cycleNumber + 6];
-        System.out.println();
+       // disassembler();
+       // inst = arr[cycleNumber + 6];
+       // System.out.println();
 
 
 
@@ -464,9 +470,9 @@ RegsPrint();
     public static String SEOffset() {
         disassembler();
         if ((opcode == 0x20 || opcode == 0x28) && ioffset >= 0) {
-            SEOffset = "0000000" + Integer.toString(ioffset);
+            SEOffset = "0000000" + Integer.toHexString(ioffset);
         } else if ((opcode == 0x20 || opcode == 0x28) && ioffset < 0) {
-            SEOffset = "fffffff" + Integer.toString(ioffset);
+            SEOffset = Integer.toHexString(ioffset);
         } else {
             SEOffset = "x";
         }
@@ -478,12 +484,25 @@ RegsPrint();
     public static int writeReg_20_16() {
         disassembler();
         if (opcode == 0x0) {
-            writeReg_20_16 = rsrc2;
+            WriteReg_20_16 = rsrc2;
         } else {
-            writeReg_20_16 = isrc2;
+            WriteReg_20_16 = isrc2;
 
         }
-        return writeReg_20_16;
+        return WriteReg_20_16;
+    }
+
+    public static int WriteReg_15_11() {
+        disassembler();
+        if (opcode == 0x0) {
+            WriteReg_15_11 = rdes;
+        } else if(opcode==0x28){
+            WriteReg_15_11 = 31;}
+        else{
+            WriteReg_15_11 =0;
+
+        }
+        return WriteReg_15_11;
     }
 
     public static String Function() {
@@ -553,19 +572,20 @@ RegsPrint();
         return SWDataValue;
     }
 
-    public static void WBReaddAction() {
+    public static void WBReadAction() {
         disassembler();
         if (opcode == 0x0) {
             Regs[rdes]=ALUResult;
-            System.out.println("$"+ rdes +"is set to new value of "+ALUResult());
+            System.out.println("$"+ rdes +" is set to new value of ");
+            System.out.printf("0x%02X", ALUResult());
         } else if(opcode==0x20){
             Regs[isrc2]=Main_Mem[ALUResult];
-            System.out.println("$"+isrc2+" is set to a new value of "+Main_Mem[ALUResult]);
+            System.out.print("$"+isrc2+" is set to a new value of ");
+            System.out.printf("0x%02X", Main_Mem[ALUResult]);
         }else{
             Main_Mem[ALUResult]=SWDataValue;
             System.out.println("No register is written to since a SW does not write to a register");
         }
-
     }
 
 
@@ -604,7 +624,7 @@ RegsPrint();
         System.out.print("        [");
         //disassembler();
         System.out.print(equation);
-//        System.out.print("]");
+        System.out.print("]");
 //        System.out.print("       IncrPC= ");
         // System.out.printf("0x%02X", address);
     }
@@ -616,7 +636,7 @@ RegsPrint();
         System.out.print("Branch = " + branch + " MemToReg = " + MemToReg + " RegWrite = " + RegWrite + " [ " + sign + " ]");
         System.out.println();
         System.out.println(" ReadReg1Value= " + ReadReg1Value + " ReadReg2Value= " + ReadReg2Value);
-        System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
+        System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + WriteReg_20_16 + " WriteReg_15_11= " + WriteReg_15_11 + " Function= " + Function);
 
     }
 
@@ -625,7 +645,7 @@ RegsPrint();
         System.out.print("Branch = " + branch + " MemToReg = " + MemToReg + " RegWrite = " + RegWrite + " [ " + sign + " ]");
         System.out.println();
         System.out.println(" ReadReg1Value= " + ReadReg1Value + " ReadReg2Value= " + ReadReg2Value);
-        System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + writeReg_20_16 + " WriteReg_15_11= " + writeReg_15_11 + " Function= " + Function);
+        System.out.print("SEOffset = " + SEOffset + " WriteReg_20_16= " + WriteReg_20_16 + " WriteReg_15_11= " + WriteReg_15_11 + " Function= " + Function);
 
     }
 
@@ -649,14 +669,17 @@ RegsPrint();
         System.out.println(" LWDataValue = " + LWDataValue + " ALUResult = " + ALUResult + " WriteRegNum= " + WriteRegNumber);
 
     }
+public static void MEMWBWritePrintForSW(){
+    System.out.println("Value "+SWDataValue+" is written to memory address " +Main_Mem[ALUResult]);
 
+}
     public static void MEMWBReadPrint() {
         System.out.print(" MemToReg = " + MemToReg + " RegWrite = " + RegWrite + " [ " + sign + " ]");
         System.out.println();
         System.out.println(" LWDataValue = " + LWDataValue + " ALUResult = " + ALUResult + " WriteRegNum= " + WriteRegNumber);
 
 
-//WBactionprint();
+
         }
     public static void RegsPrint() {
         System.out.println("Printing registers:");
